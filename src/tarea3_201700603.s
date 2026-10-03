@@ -1,4 +1,4 @@
-.global _start          // Define el punto de entrada global para el enlazador (ld)
+.global _start          // Define el punto de entrada global para el enlazador ld
 
 .section .data
 
@@ -21,7 +21,7 @@ caracter_salto_linea:
 caracter_espacio:
     .ascii " "
 
-// Arreglos de prueba (10 elementos de 64 bits = 8 bytes por número)
+// Arreglos de prueba 10 elementos de 64 bits = 8 bytes por número
 arreglo_burbuja:
     .quad 45, 12, 89, 3, 67, 23, 90, 1, 34, 56
 tamano_arreglo = (. - arreglo_burbuja) / 8    // 80 bytes / 8 bytes = 10 elementos
@@ -41,11 +41,11 @@ _start:
     bl imprimir_cadena_texto      // Llama a la función para escribir en consola
 
     ldr x0, =arreglo_burbuja // Pasa la dirección del arreglo no ordenado
-    mov x1, tamano_arreglo // Pasa la cantidad de elementos (10)
+    mov x1, tamano_arreglo // Pasa la cantidad de elementos 10
     bl imprimir_elementos_arreglo // Imprime el arreglo en pantalla
 
-    ldr x0, =arreglo_burbuja// Parámetro 1 (x0): Dirección base del arreglo
-    mov x1, tamano_arreglo  // Parámetro 2 (x1): Cantidad de elementos
+    ldr x0, =arreglo_burbuja// Parámetro 1 x0: Dirección base del arreglo
+    mov x1, tamano_arreglo  // Parámetro 2 x1: Cantidad de elementos
     bl ordenamiento_burbuja // Ejecuta la función de ordenamiento
 
     // Imprimir el resultado obtenido con Bubble Sort
@@ -57,8 +57,8 @@ _start:
     mov x1, tamano_arreglo
     bl imprimir_elementos_arreglo// Muestra los números en orden ascendente
 
-    ldr x0, =arreglo_seleccion // Parámetro 1 (x0): Dirección base
-    mov x1, tamano_arreglo// Parámetro 2 (x1): Cantidad de elementos
+    ldr x0, =arreglo_seleccion // Parámetro 1 x0: Dirección base
+    mov x1, tamano_arreglo// Parámetro 2 x1: Cantidad de elementos
     bl ordenamiento_seleccion // Ejecuta la función de ordenamiento
 
     // Imprimir el resultado obtenido con Selection Sort
@@ -80,7 +80,7 @@ _start:
 //   x1 = cantidad total de elementos en el arreglo
 ordenamiento_burbuja:
     // Preservación del Frame Pointer y registros protegidos según la convención AAPCS64
-    stp x29, x30, [sp, -48]! // Reserva 48 bytes en el Stack y guarda x29 (FP) y x30 (LR)
+    stp x29, x30, [sp, -48]! // Reserva 48 bytes en el Stack y guarda x29 FP y x30 LR
     mov x29, sp              // Establece la base del nuevo marco de pila
     stp x19, x20, [sp, 16]   // Preserva x19 y x20
     stp x21, x22, [sp, 32]   // Preserva x21 y x22
@@ -90,7 +90,7 @@ ordenamiento_burbuja:
     ble fin_ordenamiento_burbuja
 
     mov x19, x0 // x19 = Dirección de memoria base del arreglo
-    mov x20, x1 // x20 = N (Cantidad total de elementos)
+    mov x20, x1 // x20 = N Cantidad total de elementos
 
     mov x21, 0 // x21 contador de indice 
 
@@ -98,7 +98,7 @@ ciclo_externo_burbuja:
     cmp x21, x20   // compara contador
     b.ge fin_ordenamiento_burbuja// Si indice_i >= N, finaliza el algoritmo
 
-    mov x22, 0       // x22 = indice_j (Contador del ciclo interno, reinicia en 0)
+    mov x22, 0       // x22 = indice_j Contador del ciclo interno, reinicia en 0
     sub x9, x20, x21 // x9 = N - indice_i
     sub x9, x9, 1    // x9 = Limite_j = N - indice_i - 1
 
@@ -106,8 +106,8 @@ ciclo_interno_burbuja:
     cmp x22, x9     // compara indice
     b.ge siguiente_pasada_ciclo_externo_burbuja  // Si indice_j >= Limite_j, pasa al siguiente ciclo i
 
-    // Cálculo de direcciones de memoria: direccion = base + (indice_j * 8 bytes)
-    lsl x10, x22, 3   // x10 = indice_j * 8 (Desplazamiento para enteros de 64 bits)
+    // Cálculo de direcciones de memoria: direccion = base + indice_j * 8 bytes
+    lsl x10, x22, 3   // x10 = indice_j * 8 Desplazamiento para enteros de 64 bits
     add x11, x19, x10 // x11 = Dirección exacta de memoria de arreglo[j]
 
     ldr x12, [x11]    // x12 = Valor almacenado en arreglo[j]
@@ -118,20 +118,20 @@ ciclo_interno_burbuja:
     b.ls omitir_intercambio_burbuja // Si arreglo[j] <= arreglo[j+1], están bien ordenados
 
 intercambiar_elementos_burbuja:
-    // Si arreglo[j] > arreglo[j+1], intercambia las posiciones en memoria (Swap)
+    // Si arreglo[j] > arreglo[j+1], intercambia las posiciones en memoria 
     str x13, [x11] // Almacena arreglo[j+1] en la posición j
     str x12, [x11, 8] // Almacena arreglo[j] en la posición j+1
 
 omitir_intercambio_burbuja:
-    add x22, x22, 1  // indice_j++ (Avanza a la siguiente pareja de elementos)
+    add x22, x22, 1  // indice_j++ Avanza a la siguiente pareja de elementos
     b ciclo_interno_burbuja // Regresa al inicio del ciclo interno
 
 siguiente_pasada_ciclo_externo_burbuja:
-    add x21, x21, 1  // indice_i++ (Avanza una pasada completa)
+    add x21, x21, 1  // indice_i++ Avanza una pasada completa
     b ciclo_externo_burbuja // Regresa al inicio del ciclo externo
 
 fin_ordenamiento_burbuja:
-    // Restauración de registros y de la pila (Stack Frame)
+    // Restauración de registros y de la pila 
     ldp x21, x22, [sp, 32] // Restaura x21 y x22
     ldp x19, x20, [sp, 16] // Restaura x19 y x20
     ldp x29, x30, [sp], 48 // Restaura Frame Pointer y Link Register, libera 48 bytes
@@ -142,7 +142,7 @@ fin_ordenamiento_burbuja:
 //   x0 = dirección base del arreglo de enteros de 64 bits
 //   x1 = cantidad total de elementos en el arreglo
 ordenamiento_seleccion:
-    stp x29, x30, [sp, -64]! // Preservación del Stack Frame (Reserva 64 bytes alineados)
+    stp x29, x30, [sp, -64]! // Preservación del Stack Frame Reserva 64 bytes alineados
     mov x29, sp
     stp x19, x20, [sp, 16] // Preserva x19 y x20
     stp x21, x22, [sp, 32] // Preserva x21 y x22
@@ -153,17 +153,17 @@ ordenamiento_seleccion:
     ble fin_ordenamiento_seleccion
 
     mov x19, x0 // x19 = Dirección base del arreglo
-    mov x20, x1 // x20 = N (Cantidad total de elementos)
+    mov x20, x1 // x20 = N Cantidad total de elementos
 
-    mov x21, 0 // x21 = indice_i (Punto inicial de búsqueda, de 0 a N-2)
+    mov x21, 0 // x21 = indice_i Punto inicial de búsqueda, de 0 a N-2
     sub x9, x20, 1// x9 = N - 1
 
 ciclo_externo_seleccion:
     cmp x21, x9  // ¿Se han colocado los elementos en sus posiciones?
     b.ge fin_ordenamiento_seleccion // Si indice_i >= N - 1, el arreglo ya está ordenado
 
-    mov x22, x21 // x22 = indice_minimo (Asume inicialmente que arreglo[i] es el mínimo)
-    add x23, x21, 1 // x23 = indice_j = indice_i + 1 (Empieza a buscar desde el siguiente elemento)
+    mov x22, x21 // x22 = indice_minimo Asume inicialmente que arreglo[i] es el mínimo
+    add x23, x21, 1 // x23 = indice_j = indice_i + 1 Empieza a buscar desde el siguiente elemento
 
 buscar_minimo_seleccion:
     cmp x23, x20  // ¿Llegamos al final del arreglo en el ciclo de búsqueda?
@@ -184,11 +184,11 @@ actualizar_indice_minimo:
     mov x22, x23   // Guarda la posición j como la nueva posición del número mínimo
 
 omitir_actualizacion_minimo:
-    add x23, x23, 1   // indice_j++ (Avanza a inspeccionar el siguiente elemento)
+    add x23, x23, 1   // indice_j++ Avanza a inspeccionar el siguiente elemento
     b buscar_minimo_seleccion // Continúa la búsqueda en el resto del arreglo
 
 verificar_e_intercambiar_minimo:
-    // Si el valor mínimo ya estaba en la posición inicial (indice_minimo == indice_i), no hace falta intercambio
+    // Si el valor mínimo ya estaba en la posición inicial indice_minimo == indice_i, no hace falta intercambio
     cmp x22, x21
     b.eq siguiente_pasada_ciclo_externo_seleccion
 
@@ -258,7 +258,7 @@ convertir_e_imprimir_numero:
 
 ciclo_conversion_ascii:
     udiv x3, x0, x2 // x3 = x0 / 10
-    msub x4, x3, x2, x0 // x4 = x0 - (x3 * 10) (Obtiene el residuo)
+    msub x4, x3, x2, x0 // x4 = x0 - x3 * 10 Obtiene el residuo
     add x4, x4, '0'// Convierte el dígito numérico a su equivalente ASCII
     strb w4, [x1]// Guarda el carácter en el búfer
     sub x1, x1, 1// Mueve el puntero un byte a la izquierda
@@ -280,7 +280,7 @@ ciclo_conversion_ascii:
 imprimir_cadena_texto:
     mov x2, x1 // Parámetro 3: Longitud del buffer
     mov x1, x0 // Parámetro 2: Dirección de la cadena
-    mov x0, 1  // Parámetro 1: Salida estándar (stdout = 1)
+    mov x0, 1  // Parámetro 1: Salida estándar stdout = 1
     mov x8, 64 // Syscall 64 = sys_write en Linux ARM64
     svc 0  // Ejecuta la llamada al sistema
     ret
